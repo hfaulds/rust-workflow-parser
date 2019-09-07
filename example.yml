@@ -1,0 +1,41 @@
+name: Blank workflow
+on: [push]
+jobs:
+  runa:
+    name: RunA
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Run a one-line script
+      run: echo Hello, world!
+
+    - name: Sleep
+      run: |
+        echo "hello 0"
+        for num in 1 2
+        do
+          sleep 10
+          echo "hello $num"
+        done
+
+    - name: Run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project.
+
+  runb:
+    name: RunB
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Run a one-line script
+      run: echo Hello, world!
+
+    - name: Echo secret
+      run: echo ${{ secrets.foo }}
+
+    - name: Run a multi-line script
+      run: |
+        echo Add other actions to build,
+        echo test, and deploy your project.
+
