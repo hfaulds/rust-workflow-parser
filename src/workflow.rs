@@ -1,18 +1,17 @@
-use std::fs;
 use std::collections::HashMap;
 
 use serde::{Deserialize};
 
 #[derive(Debug, PartialEq, Deserialize)]
-struct Workflow {
-    on: Trigger,
-    name: String,
-    jobs: HashMap<String, Job>,
+pub struct Workflow {
+    pub on: Trigger,
+    pub name: String,
+    pub jobs: HashMap<String, Job>,
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
 #[serde(untagged)]
-enum Trigger {
+pub enum Trigger {
     TriggerAtom(String),
     TriggerList(Vec<String>),
     TriggerPush {
@@ -24,50 +23,50 @@ enum Trigger {
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
-struct TriggerPushInner {
-    branches: Option<StringList>,
-    tags: Option<StringList>,
+pub struct TriggerPushInner {
+    pub branches: Option<StringList>,
+    pub tags: Option<StringList>,
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
-struct TriggerScheduleInner {
-    cron: String,
-    branches: Option<StringList>,
-    tags: Option<StringList>,
+pub struct TriggerScheduleInner {
+    pub cron: String,
+    pub branches: Option<StringList>,
+    pub tags: Option<StringList>,
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
-struct Job {
-    needs: Option<StringList>,
+pub struct Job {
+    pub needs: Option<StringList>,
     #[serde(rename = "if")]
-    conditional: Option<String>,
-    strategy: Option<Strategy>,
-    name: Option<String>,
+    pub conditional: Option<String>,
+    pub strategy: Option<Strategy>,
+    pub name: Option<String>,
     #[serde(rename = "runs-on")]
-    runs_on: Option<String>,
+    pub runs_on: Option<String>,
     #[serde(rename = "timeout-minutes")]
-    timeout_minutes: Option<u8>,
+    pub timeout_minutes: Option<u8>,
     #[serde(rename = "cancel-timeout-minutes")]
-    cancel_timeout_minutes: Option<u8>,
+    pub cancel_timeout_minutes: Option<u8>,
     #[serde(rename = "continue-on-error")]
-    continue_on_error: Option<bool>,
-    container: Option<Container>,
-    services: Option<HashMap<String,Container>>,
-    steps: Vec<Step>,
+    pub continue_on_error: Option<bool>,
+    pub container: Option<Container>,
+    pub services: Option<HashMap<String,Container>>,
+    pub steps: Vec<Step>,
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
-struct Strategy {
+pub struct Strategy {
     #[serde(rename = "fail-fast")]
-    fail_fast: bool,
+    pub fail_fast: bool,
     #[serde(rename = "max-parallel")]
-    max_parallel: bool,
-    matrix: HashMap<String, Vec<String>>,
+    pub max_parallel: bool,
+    pub matrix: HashMap<String, Vec<String>>,
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
 #[serde(untagged)]
-enum Container {
+pub enum Container {
     Name(String),
     Properties {
         image: String,
@@ -79,22 +78,21 @@ enum Container {
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
-struct Step {
-    name: String,
-    run: String,
+pub struct Step {
+    pub name: String,
+    pub run: String,
 }
 
 #[derive(Debug, PartialEq, Deserialize)]
 #[serde(untagged)]
-enum StringList {
+pub enum StringList {
     Atom(String),
     List(Vec<String>),
 }
 
-fn main() {
-    let s = fs::read_to_string("example.yml")
-        .expect("Something went wrong reading the file");
-    let workflow: Workflow = serde_yaml::from_str(&s)
-        .expect("Something went wrong parsing the workflow");
-    print!("{:?}", workflow)
+pub fn parse(s: &str) -> Result<Workflow,String> {
+    match serde_yaml::from_str(s) {
+        Ok(w) => Ok(w),
+        Err(e) => Err(e.to_string()),
+    }
 }

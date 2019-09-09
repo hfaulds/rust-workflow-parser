@@ -3,7 +3,17 @@ name = "workflow-parser"
 version = "0.1.0"
 authors = ["Hayden Faulds <fauldsh@gmail.com>"]
 edition = "2018"
+build = "./src/build.rs"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.8"
+libc = "0.2"
+c_vec = "^1.0.0"
+
+[build-dependencies]
+cbindgen = "0.9.1"
+
+[lib]
+name = "workflow_parser"
+crate-type = ["cdylib"]
