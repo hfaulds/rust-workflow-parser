@@ -3,96 +3,27 @@ use workflow::Workflow;
 use std::collections::HashMap;
 
 use libc::c_char;
-use c_vec::CVec;
 use std::ffi::{CStr,CString};
 
 #[repr(C)]
 pub struct CWorkflow {
     on: CTrigger,
     name: *const c_char,
-    jobs: HashMap<*const c_char, CJob>,
 }
 
 impl Workflow {
     fn to_c(self) -> CWorkflow {
         CWorkflow {
-            on: CTrigger::CTriggerAtom(CString::new("").unwrap().into_raw()),
+            on: CTrigger::CTriggerAtom(CString::new("push").unwrap().into_raw()),
                 //self.on.to_c(),
             name: CString::new(self.name).unwrap().into_raw(),
-            jobs: HashMap::new(),
         }
     }
 }
 
 #[repr(C)]
 enum CTrigger {
-    CTriggerAtom(*const c_char),
-    CTriggerList(CVec<*const c_char>),
-    CTriggerPush {
-        push: CTriggerPushInner,
-    },
-    CTriggerSchedule {
-        schedule: CVec<CTriggerScheduleInner>,
-    },
-}
-
-#[repr(C)]
-struct CTriggerPushInner {
-    branches: Option<CStringList>,
-    tags: Option<CStringList>,
-}
-
-#[repr(C)]
-struct CTriggerScheduleInner {
-    cron: *const c_char,
-    branches: Option<CStringList>,
-    tags: Option<CStringList>,
-}
-
-#[repr(C)]
-struct CJob {
-    needs: Option<CStringList>,
-    conditional: Option<*const c_char>,
-    strategy: Option<CStrategy>,
-    name: Option<*const c_char>,
-    runs_on: Option<*const c_char>,
-    timeout_minutes: Option<u8>,
-    cancel_timeout_minutes: Option<u8>,
-    continue_on_error: Option<bool>,
-    container: Option<CContainer>,
-    services: Option<HashMap<*const c_char,CContainer>>,
-    steps: CVec<CStep>,
-}
-
-#[repr(C)]
-struct CStrategy {
-    fail_fast: bool,
-    max_parallel: bool,
-    matrix: HashMap<*const c_char, CVec<*const c_char>>,
-}
-
-#[repr(C)]
-enum CContainer {
-    Name(*const c_char),
-    Properties {
-        image: *const c_char,
-        options: *const c_char,
-        env: HashMap<*const c_char,*const c_char>,
-        ports: CVec<*const c_char>,
-        volumes: CVec<*const c_char>,
-    }
-}
-
-#[repr(C)]
-struct CStep {
-    name: *const c_char,
-    run: *const c_char,
-}
-
-#[repr(C)]
-enum CStringList {
-    Atom(*const c_char),
-    List(CVec<*const c_char>),
+    CCTriggerAtom(*const c_char),
 }
 
 #[repr(C)]

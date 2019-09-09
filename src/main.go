@@ -14,8 +14,10 @@ func main() {
 		panic(err)
 	}
 	result := C.parse(C.CString(string(b)))
-	if !is_result_ok(result) {
-		panic(err_from_result(result))
+	if !C.is_result_ok(result) {
+		panic(C.err_from_result(result))
 	}
-	fmt.Println(workflow_from_result(result))
+	workflow := C.workflow_from_result(result)
+	fmt.Println(workflow.on.tag)
+	fmt.Println(C.GoString(workflow.name))
 }
