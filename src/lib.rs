@@ -1,5 +1,5 @@
 mod workflow;
-use workflow::Workflow;
+use workflow::*;
 use std::collections::HashMap;
 
 use libc::c_char;
@@ -14,8 +14,7 @@ pub struct CWorkflow {
 impl Workflow {
     fn to_c(self) -> CWorkflow {
         CWorkflow {
-            on: CTrigger::CTriggerAtom(CString::new("push").unwrap().into_raw()),
-                //self.on.to_c(),
+            on: self.on.to_c(),
             name: CString::new(self.name).unwrap().into_raw(),
         }
     }
@@ -23,7 +22,13 @@ impl Workflow {
 
 #[repr(C)]
 enum CTrigger {
-    CCTriggerAtom(*const c_char),
+    CTriggerAtom(*const c_char),
+}
+
+impl Trigger {
+    fn to_c(self) -> CTrigger {
+        CTrigger::CTriggerAtom(CString::new("push").unwrap().into_raw())
+    }
 }
 
 #[repr(C)]
